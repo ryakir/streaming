@@ -1,0 +1,23 @@
+services:
+  prowlarr:
+    image: linuxserver/prowlarr
+    container_name: prowlarr
+    environment:
+      TZ: ${TZ:?}
+      PUID: ${PUID:?}
+      PGID: ${PGID:?}
+    volumes:
+      - type: bind
+        source: ${APP_LOG_PATH:?}/prowlarr
+        target: /config/logs
+      - type: bind
+        source: ${APP_DATA_PATH:?}/prowlarr
+        target: /config
+    networks:
+      - streaming
+    ports:
+      - 9696:9696
+    depends_on:
+      - radarr
+      - sonarr
+    restart: unless-stopped

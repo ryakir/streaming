@@ -1,0 +1,23 @@
+services:
+  jellyseerr:
+    image: fallenbagel/jellyseerr
+    container_name: jellyseerr
+    environment:
+      TZ: ${TZ:?}
+      LOG_LEVEL: debug
+    volumes:
+      - type: bind
+        source: ${APP_LOG_PATH:?}/jellyseerr
+        target: /app/config/logs
+      - type: bind
+        source: ${APP_DATA_PATH:?}/jellyseerr
+        target: /app/config
+    ports:
+      - 5055:5055
+    networks:
+      - streaming
+    depends_on:
+      - jellyfin
+      - radarr
+      - sonarr
+    restart: unless-stopped

@@ -1,0 +1,13 @@
+include:
+  - ./jellyfin.yaml
+  - ./qbittorrent.yaml
+  - ./sonarr.yaml
+  - ./radarr.yaml
+  - ./prowlarr.yaml
+  - ./bazarr.yaml
+  - ./recyclarr.yaml
+  - ./jellyseerr.yaml
+
+networks:
+  streaming:
+    name: streaming

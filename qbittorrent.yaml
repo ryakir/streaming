@@ -1,0 +1,50 @@
+services:
+  qbittorrent:
+    image: linuxserver/qbittorrent
+    container_name: qbittorrent
+    environment:
+      TZ: ${TZ:?}
+      PUID: ${PUID:?}
+      PGID: ${PGID:?}
+      WEBUI_PORT: 8080
+    volumes:
+      - type: bind
+        source: ${APP_DATA_PATH:?}/qbittorrent
+        target: /config
+      - type: bind
+        source: ${USER_DATA_PATH:?}
+        target: /data
+    ports:
+      - 8080:8080
+      - 26881:6881
+      - 26881:6881/udp
+    networks:
+      - streaming
+    labels:
+      docker-volume-backup.stop-during-backup: qbittorrent
+    restart: unless-stopped
+
+  qbittorrent-backup:
+    image: offen/docker-volume-backup:v2
+    container_name: qbittorrent-backup
+    environment:
+      EXEC_LABEL: qbittorrent
+      BACKUP_STOP_DURING_BACKUP_LABEL: qbittorrent
+      BACKUP_PRUNING_PREFIX: backup-
+      BACKUP_RETENTION_DAYS: 7
+    volumes:
+      - type: bind
+        source: ${APP_DATA_PATH:?}/qbittorrent
+        target: /backup/qbittorrent
+        read_only: true
+      - type: bind
+        source: ${BACKUP_DATA_PATH:?}/qbittorrent
+        target: /archive
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    network_mode: none
+    labels:
+      com.centurylinklabs.watchtower.enable: true
+    restart: unless-stopped

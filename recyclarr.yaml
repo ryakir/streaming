@@ -1,0 +1,18 @@
+services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    user: ${PUID:?}:${PGID:?}
+    environment:
+      TZ: ${TZ:?}
+      RECYCLARR_CREATE_CONFIG: true
+    volumes:
+      - type: bind
+        source: ${APP_LOG_PATH:?}/recyclarr
+        target: /config/logs
+      - type: bind
+        source: ${APP_DATA_PATH:?}/recyclarr
+        target: /config
+    networks:
+      - streaming
+    restart: unless-stopped

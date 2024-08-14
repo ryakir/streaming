@@ -1,0 +1,45 @@
+services:
+  bazarr:
+    image: linuxserver/bazarr
+    container_name: bazarr
+    environment:
+      TZ: ${TZ:?}
+      PUID: ${PUID:?}
+      PGID: ${PGID:?}
+    volumes:
+      - type: bind
+        source: ${APP_LOG_PATH:?}/bazarr
+        target: /config/log
+      - type: bind
+        source: ${APP_DATA_PATH:?}/bazarr
+        target: /config
+      - type: bind
+        source: ${USER_DATA_PATH:?}
+        target: /data
+    ports:
+      - 6767:6767
+    networks:
+      - streaming
+    depends_on:
+      - radarr
+      - sonarr
+    restart: unless-stopped
+
+  bazarr-backup:
+    image: offen/docker-volume-backup:v2
+    container_name: bazarr-backup
+    environment:
+      BACKUP_PRUNING_PREFIX: backup-
+      BACKUP_RETENTION_DAYS: 7
+    volumes:
+      - type: bind
+        source: ${APP_DATA_PATH:?}/bazarr
+        target: /backup/bazarr
+        read_only: true
+      - type: bind
+        source: ${BACKUP_DATA_PATH:?}/bazarr
+        target: /archive
+    network_mode: none
+    labels:
+      com.centurylinklabs.watchtower.enable: true
+    restart: unless-stopped
