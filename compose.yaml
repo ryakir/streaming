@@ -7,6 +7,7 @@ include:
   - ./bazarr.yaml
   - ./recyclarr.yaml
   - ./jellyseerr.yaml
+  - ./flaresolverr.yaml
 
 networks:
   streaming:
